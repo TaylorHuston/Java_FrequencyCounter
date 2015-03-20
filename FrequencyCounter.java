@@ -1,10 +1,10 @@
 /**
- * Created by Taylor on 3/19/2015.
+  Test client for various Symbol Table implementations
  */
 public class FrequencyCounter {
     public static void main(String args[]) {
         int minLength = Integer.parseInt(args[0]); //Cut off for the length of word
-        SymbolTable<String, Integer> st = new SymbolTable<String, Integer>();
+        LLSymbolTable<String, Integer> st = new LLSymbolTable<String, Integer>();
 
         while (!StdIn.isEmpty()) { //Build Symbol Table
             String word = StdIn.readString();
