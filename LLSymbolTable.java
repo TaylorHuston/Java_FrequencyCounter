@@ -62,4 +62,8 @@ public class LLSymbolTable<Key, Value> {
     public Iterable<Key> keys() {
         return forIterating;
     }
+
+    public int size() {
+        return size;
+    }
 }
