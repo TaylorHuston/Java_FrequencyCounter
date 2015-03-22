@@ -1,11 +1,14 @@
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
+
 /**
-   Symbol Table implemented with an unordered Linked List
+   Symbol Table implemented with an ordered Linked List
  */
 public class LLSymbolTable<Key, Value> {
     private Node head;
     private int size = 0;
+    private ArrayList<Key> forIterating = new ArrayList();
 
     private class Node {
         Key key;
@@ -46,6 +49,7 @@ public class LLSymbolTable<Key, Value> {
         }
         head = new Node(newKey, newVal, head);
         size++;
+        forIterating.add(newKey);
     }
 
     public void delete(Key toDelete) {
@@ -53,5 +57,9 @@ public class LLSymbolTable<Key, Value> {
             throw new NoSuchElementException("Key does not exist in Symbol Table");
 
         }
+    }
+
+    public Iterable<Key> keys() {
+        return forIterating;
     }
 }

@@ -20,11 +20,11 @@ public class FrequencyCounter {
         String max = "";
         st.put(max,0);
         for(String word : st.keys()) {
-            if (st.get(word) ? st.get(max)) {
+            if (st.get(word) > st.get(max)) {
                 max = word;
             }
         }
         StdOut.println(max + " " + st.get(max));
-        }
     }
 }
+
