@@ -1,10 +1,11 @@
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 /**
  Symbol Table implementation using ordered parallel arrays and binary search
  */
 public class BSSymbolTable<Key extends Comparable<Key>, Value> {
-    private static int init_capacity = 1000;
+    private static int init_capacity = 2;
 
     private Key[] keys;
     private Value[] vals;
@@ -20,24 +21,21 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
         this(init_capacity);
     }
 
-    public int size() {
-        return size;
+    //resizing the array
+    private void resize(int capacity) {
+        Key[]   tempk = (Key[])   new Comparable[capacity];
+        Value[] tempv = (Value[]) new Object[capacity];
+        for (int i = 0; i < size; i++) {
+            tempk[i] = keys[i];
+            tempv[i] = vals[i];
+        }
+        vals = tempv;
+        keys = tempk;
     }
 
-    //Returns the value associated with the passed in key
-    public Value get(Key key) {
-        if (isEmpty()) {
-            return null;
-        }
-
-        //Find the index of the key, if it is in the array
-        int i = rank(key);
-
-        if (i < size && keys[i].compareTo(key) == 0) { //If the key exists, returns it's associated value
-            return vals[i];
-        } else {
-            return null;
-        }
+    //Return the size of the Symbol Table
+    public int size() {
+        return size;
     }
 
     //Is the Symbol Table empty?
@@ -71,6 +69,22 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
 
     }
 
+    //Returns the value associated with the passed in key
+    public Value get(Key key) {
+        if (isEmpty()) {
+            return null;
+        }
+
+        //Find the index of the key, if it is in the array
+        int i = rank(key);
+
+        if (i < size && keys[i].compareTo(key) == 0) { //If the key exists, returns it's associated value
+            return vals[i];
+        } else {
+            return null;
+        }
+    }
+
     //Place a new key-value pair into Symbol Table
     public void put(Key newKey, Value newVal) {
         //The position where the key should be
@@ -80,6 +94,11 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
         if (i < size && keys[i].compareTo(newKey) == 0) {
             vals[i] = newVal;
             return;
+        }
+
+        //If you've reached current capacity, double the size of the array
+        if (size == keys.length) {
+            resize(2*keys.length);
         }
 
         //Key doesn't exist, shift all items over by 1 and place key into array
@@ -94,14 +113,7 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
 
     //Return true of toFind is in the array
     public boolean contains(Key toFind) {
-        //The position where the key should be
-        int i = rank(toFind);
-
-        if (i < size && toFind.compareTo(keys[i]) == 0) { //Element does exist
-            return true;
-        } else {
-            return false;
-        }
+        return get(toFind) != null;
     }
 
     //Return the key in rank toFind
@@ -116,7 +128,7 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
     //Return the minimum key
     public Key min() {
         if (isEmpty()) {
-            return null;
+            throw new NoSuchElementException("Symbol Table is empty");
         }
         return keys[0];
     }
@@ -124,7 +136,7 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
     //return the maximum key
     public Key max() {
         if (isEmpty()) {
-            return null;
+            throw new NoSuchElementException("Symbol Table is empty");
         }
         return keys[size-1];
     }
@@ -155,31 +167,45 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
-    //public Key select(int toSelect)
-
     public void delete(Key toDelete) {
+        if (isEmpty()) {
+            return;
+        }
+
         //Find the position of the object to delete
         int i = rank(toDelete);
-        int cmp = toDelete.compareTo(keys[i]);
 
-        if (cmp == 0) {
-            for (int j = i; j < size; j++) {
+        //If key exists, remove it by shifting all other keys over
+        if (i < size && toDelete.compareTo(keys[i]) == 0) {
+            for (int j = i; j < size-1; j++) {
                 keys[j] = keys[j+1];
                 vals[j] = vals[j+1];
             }
             size--;
+            keys[size] = null;
+            vals[size] = null;
+        }
+
+        //If array is 1/4th full, resize it
+        if (size > 0 && size == keys.length/4) {
+            resize(keys.length/2);
         }
     }
 
     public void deleteMin() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("Symbol Table is empty");
+        }
         delete(keys[0]);
     }
 
     public void deleteMax() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("Symbol Table is empty");
+        }
         delete(keys[size-1]);
     }
 
-    //public Iterable<Key> keys(Key lo, Key hi)
 
     public Iterable<Key> keys() {
         ArrayList<Key> forIterating = new ArrayList();
@@ -191,6 +217,14 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
 
     public static void main(String[] args) {
         BSSymbolTable<Integer, String> testBSST = new BSSymbolTable<Integer, String>();
+
+        try {
+            testBSST.deleteMin();
+            testBSST.deleteMax();
+        } catch (NoSuchElementException e) {
+            StdOut.println(e.getMessage());
+        }
+
 
         testBSST.put(3, "Three");
         testBSST.put(1, "One");
@@ -240,7 +274,7 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
         StdOut.println("Array contains 5: " + testBSST.contains(5));
         StdOut.println("Array contains 6: " + testBSST.contains(6));
         StdOut.println("Key at rank 3: " + testBSST.select(3));
-        
+
 
     }
 
