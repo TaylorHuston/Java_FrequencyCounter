@@ -5,6 +5,7 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
     private Key[] keys;
     private Value[] vals;
     private int size = 0;
+    private int capacity = 1000;
 
     public BSSymbolTable(int size) {
         keys = (Key[]) new Comparable[size];
@@ -61,10 +62,44 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
 
     }
 
-    public void put(Key key, Value val) {
-        int i = rank(key);
+    public void put(Key newKey, Value newVal) {
+        //The position of the key if it already exists or the number of keys smaller than it
+        int i = rank(newKey);
 
-        if ()
+        //Key exists in array, update associated value
+        if (i < size && keys[i].compareTo(newKey) == 0) {
+            vals[i] = newVal;
+            return;
+        }
+
+        //Key doesn't exist, shift all items over by 1 and place key into array
+        for (int j = size; j > i; j--) {
+            keys[j] = keys[j-1];
+            vals[j] = vals[j-1];
+        }
+        keys[i] = newKey;
+        vals[i] = newVal;
+        size++;
     }
+
+    //public boolean contains(Key key) {}
+
+    //public Key min()
+
+    //public Key max()
+
+    //public Key floor(Key key)
+
+    //public Key ceiling(Key key)
+
+    //public Key select(int toSelect)
+
+    //public void deleteMin()
+
+    //public void deleteMax()
+
+    //public Iterable<Key> keys(Key lo, Key hi)
+
+    //public Iterable<Key> keys()
 
 }
