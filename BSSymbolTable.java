@@ -33,20 +33,21 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
         //Find the index of the key, if it is in the array
         int i = rank(key);
 
-        if (i < size && keys[i].compareTo(key) == 0) {
+        if (i < size && keys[i].compareTo(key) == 0) { //If the key exists, returns it's associated value
             return vals[i];
         } else {
             return null;
         }
     }
 
+    //Is the Symbol Table empty?
     boolean isEmpty() {
-        return size < 0;
+        return size <= 0;
     }
 
     //Returns the index of the key.
     //If the key is not in the array, it returns the number of keys that are smaller than it.
-    //USes Binary Search to find the proper place.
+    //Uses Binary Search to find the proper place.
     public int rank (Key key) {
         return rank(key, 0, size-1);
     }
@@ -70,8 +71,9 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
 
     }
 
+    //Place a new key-value pair into Symbol Table
     public void put(Key newKey, Value newVal) {
-        //The position of the key if it already exists or the number of keys smaller than it
+        //The position where the key should be
         int i = rank(newKey);
 
         //Key exists in array, update associated value
@@ -90,7 +92,26 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
         size++;
     }
 
-    //public boolean contains(Key key) {}
+    //Return true of toFind is in the array
+    public boolean contains(Key toFind) {
+        //The position where the key should be
+        int i = rank(toFind);
+
+        if (i < size && toFind.compareTo(keys[i]) == 0) { //Element does exist
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //Return the key in rank toFind
+    public Key select (int toFind) {
+        if (toFind < 0 || toFind > size) {
+            return null;
+        } else {
+            return keys[toFind];
+        }
+    }
 
     //Return the minimum key
     public Key min() {
@@ -112,9 +133,8 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
     public Key floor(Key toFind) {
         //Find the position of the object
         int i = rank(toFind);
-        int cmp = toFind.compareTo(keys[i]);
 
-        if (i < size && cmp == 0) { //if toKeys is in array, return it
+        if (i < size && toFind.compareTo(keys[i]) == 0) { //if toKeys is in array, return it
             return keys[i];
         } else if (i == 0) { //if toKeys is smaller than everything in the array, it has no floor
             return null;
@@ -217,10 +237,10 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
         StdOut.println("Ceiling of 3: " + testBSST.ceiling(3));
         StdOut.println("Floor of 0: " + testBSST.floor(0));
         StdOut.println("Ceiling of 6: " + testBSST.ceiling(6));
-
-
-
-
+        StdOut.println("Array contains 5: " + testBSST.contains(5));
+        StdOut.println("Array contains 6: " + testBSST.contains(6));
+        StdOut.println("Key at rank 3: " + testBSST.select(3));
+        
 
     }
 
