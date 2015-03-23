@@ -92,20 +92,54 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
 
     //public boolean contains(Key key) {}
 
-    //public Key min()
+    //Return the minimum key
+    public Key min() {
+        if (isEmpty()) {
+            return null;
+        }
+        return keys[0];
+    }
 
-    //public Key max()
+    //return the maximum key
+    public Key max() {
+        if (isEmpty()) {
+            return null;
+        }
+        return keys[size-1];
+    }
 
-    //public Key floor(Key key)
+    //Return largest key that is <= to toFind
+    public Key floor(Key toFind) {
+        //Find the position of the object
+        int i = rank(toFind);
+        int cmp = toFind.compareTo(keys[i]);
 
-    //public Key ceiling(Key key)
+        if (i < size && cmp == 0) { //if toKeys is in array, return it
+            return keys[i];
+        } else if (i == 0) { //if toKeys is smaller than everything in the array, it has no floor
+            return null;
+        } else {  //Return the largest key that is < toFind
+            return keys[i-1];
+        }
+    }
+
+    //Return smallest key that is >= to toFind
+    public Key ceiling(Key toFind) {
+        //Find the position of the object
+        int i = rank(toFind);
+
+        if (i == size) { //if toKeys is larger than everything in the array, it has no ceiling
+            return null;
+        } else {  //Return the key in position i, which will either be toFind or it's ceiling
+            return keys[i];
+        }
+    }
 
     //public Key select(int toSelect)
 
     public void delete(Key toDelete) {
         //Find the position of the object to delete
         int i = rank(toDelete);
-
         int cmp = toDelete.compareTo(keys[i]);
 
         if (cmp == 0) {
@@ -147,12 +181,16 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
         for (Integer myInt : testBSST.keys()) {
             StdOut.println(myInt + " " + testBSST.get(myInt));
         }
+        StdOut.println("Size: " + testBSST.size);
+        StdOut.println();
 
         testBSST.delete(3);
 
         for (Integer myInt : testBSST.keys()) {
             StdOut.println(myInt + " " + testBSST.get(myInt));
         }
+        StdOut.println("Size: " + testBSST.size);
+        StdOut.println();
 
         testBSST.deleteMin();
         testBSST.deleteMax();
@@ -160,6 +198,29 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
         for (Integer myInt : testBSST.keys()) {
             StdOut.println(myInt + " " + testBSST.get(myInt));
         }
+        StdOut.println("Size: " + testBSST.size);
+        StdOut.println();
+
+        testBSST.put(3, "Three");
+        testBSST.put(1, "One");
+        testBSST.put(5, "Five");
+
+        for (Integer myInt : testBSST.keys()) {
+            StdOut.println(myInt + " " + testBSST.get(myInt));
+        }
+        StdOut.println("Size: " + testBSST.size);
+        StdOut.println("Min: " + testBSST.min());
+        StdOut.println("Max: " + testBSST.max());
+        StdOut.println("Floor of 4: " + testBSST.floor(4));
+        StdOut.println("Ceiling of 4: " + testBSST.ceiling(4));
+        StdOut.println("Floor of 3: " + testBSST.floor(3));
+        StdOut.println("Ceiling of 3: " + testBSST.ceiling(3));
+        StdOut.println("Floor of 0: " + testBSST.floor(0));
+        StdOut.println("Ceiling of 6: " + testBSST.ceiling(6));
+
+
+
+
 
     }
 
