@@ -1,15 +1,23 @@
+import java.util.ArrayList;
+
 /**
  Symbol Table implementation using ordered parallel arrays and binary search
  */
 public class BSSymbolTable<Key extends Comparable<Key>, Value> {
+    private static int init_capacity = 1000;
+
     private Key[] keys;
     private Value[] vals;
     private int size = 0;
-    private int capacity = 1000;
+
 
     public BSSymbolTable(int size) {
         keys = (Key[]) new Comparable[size];
         vals = (Value[]) new Object[size];
+    }
+
+    public BSSymbolTable() {
+        this(init_capacity);
     }
 
     public int size() {
@@ -33,14 +41,14 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
     }
 
     boolean isEmpty() {
-        return size > 0;
+        return size < 0;
     }
 
     //Returns the index of the key.
     //If the key is not in the array, it returns the number of keys that are smaller than it.
     //USes Binary Search to find the proper place.
     public int rank (Key key) {
-        return rank(key, 0, keys.length-1);
+        return rank(key, 0, size-1);
     }
 
     public int rank (Key key, int lo, int hi) {
@@ -100,6 +108,26 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
 
     //public Iterable<Key> keys(Key lo, Key hi)
 
-    //public Iterable<Key> keys()
+    public Iterable<Key> keys() {
+        ArrayList<Key> forIterating = new ArrayList();
+        for (int i = 0; i < size; i++) {
+            forIterating.add(keys[i]);
+        }
+        return forIterating;
+    }
+
+    public static void main(String[] args) {
+        BSSymbolTable<Integer, String> testBSST = new BSSymbolTable<Integer, String>();
+
+        testBSST.put(3, "Three");
+        testBSST.put(1, "One");
+        testBSST.put(2, "Two");
+
+        for (Integer myInt : testBSST.keys()) {
+            StdOut.println(myInt + " " + testBSST.get(myInt));
+        }
+
+
+    }
 
 }
