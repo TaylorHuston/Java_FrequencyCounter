@@ -117,9 +117,13 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
-    //public void deleteMin()
+    public void deleteMin() {
+        delete(keys[0]);
+    }
 
-    //public void deleteMax()
+    public void deleteMax() {
+        delete(keys[size-1]);
+    }
 
     //public Iterable<Key> keys(Key lo, Key hi)
 
@@ -138,12 +142,20 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
         testBSST.put(1, "One");
         testBSST.put(2, "Two");
         testBSST.put(4, "Four");
+        testBSST.put(1, "OneOne");
 
         for (Integer myInt : testBSST.keys()) {
             StdOut.println(myInt + " " + testBSST.get(myInt));
         }
 
         testBSST.delete(3);
+
+        for (Integer myInt : testBSST.keys()) {
+            StdOut.println(myInt + " " + testBSST.get(myInt));
+        }
+
+        testBSST.deleteMin();
+        testBSST.deleteMax();
 
         for (Integer myInt : testBSST.keys()) {
             StdOut.println(myInt + " " + testBSST.get(myInt));
