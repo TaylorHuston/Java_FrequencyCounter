@@ -102,6 +102,21 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
 
     //public Key select(int toSelect)
 
+    public void delete(Key toDelete) {
+        //Find the position of the object to delete
+        int i = rank(toDelete);
+
+        int cmp = toDelete.compareTo(keys[i]);
+
+        if (cmp == 0) {
+            for (int j = i; j < size; j++) {
+                keys[j] = keys[j+1];
+                vals[j] = vals[j+1];
+            }
+            size--;
+        }
+    }
+
     //public void deleteMin()
 
     //public void deleteMax()
@@ -122,11 +137,17 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
         testBSST.put(3, "Three");
         testBSST.put(1, "One");
         testBSST.put(2, "Two");
+        testBSST.put(4, "Four");
 
         for (Integer myInt : testBSST.keys()) {
             StdOut.println(myInt + " " + testBSST.get(myInt));
         }
 
+        testBSST.delete(3);
+
+        for (Integer myInt : testBSST.keys()) {
+            StdOut.println(myInt + " " + testBSST.get(myInt));
+        }
 
     }
 
