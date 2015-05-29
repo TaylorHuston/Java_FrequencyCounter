@@ -3,16 +3,23 @@
  */
 public class FrequencyCounter {
     public static void main(String args[]) {
-        int minLength = Integer.parseInt(args[0]); //Cut off for the length of word
+        //Cut off for the length of word
+        int minLength = Integer.parseInt(args[0]);
+
+        //Symbol Tables
+        //Linked List implementation
         LLSymbolTable<String, Integer> st = new LLSymbolTable<String, Integer>();
 
-        while (!StdIn.isEmpty()) { //Build Symbol Table
+        //Build Symbol Table
+        //Read each string in. If it's long enough, try and add it to the Symbol Table.
+        //If it doesn't already exists, add it, if it does increment the count for it
+        while (!StdIn.isEmpty()) {
             String word = StdIn.readString();
-            if (word.length() >= minLength) { //If the word meets the minimum length
-                if(!st.contains(word)) { //If the word hasn't already been added
+            if (word.length() >= minLength) {
+                if(!st.contains(word)) {
                     st.put(word, 1);
                 } else {
-                    st.put(word, st.get(word)+1); //Increment the count for that word
+                    st.put(word, st.get(word)+1);
                 }
             }
         }
