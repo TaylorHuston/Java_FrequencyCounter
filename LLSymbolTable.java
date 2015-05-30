@@ -3,11 +3,12 @@ import java.util.NoSuchElementException;
 
 
 /**
-   Symbol Table implemented with an ordered Linked List
+   Symbol Table implemented with an unordered Linked List
  */
 public class LLSymbolTable<Key, Value> {
     private Node head;
     private int size = 0;
+    private int compares = 0;
     private ArrayList<Key> forIterating = new ArrayList();
 
     private class Node {
@@ -40,8 +41,9 @@ public class LLSymbolTable<Key, Value> {
 
     //Method that inserts a new key-val pair into linked list
     public void put(Key newKey, Value newVal) {
-        //Iterate through the LL, if key exists update associated value, if not add i to the beginning of the LL
+        //Iterate through the LL, if key exists update associated value, if not add it to the beginning of the LL
         for (Node position = head; position != null; position = position.next) {
+            compares++;
             if (newKey.equals(position.key)) {
                 position.val = newVal;
                 return;

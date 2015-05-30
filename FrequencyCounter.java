@@ -31,7 +31,7 @@ public class FrequencyCounter {
                 max = word;
             }
         }
-        StdOut.println(max + " " + st.get(max));
+        StdOut.println("Max: " + max + " " + st.get(max));
     }
 }
 
