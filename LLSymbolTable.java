@@ -9,6 +9,7 @@ public class LLSymbolTable<Key, Value> {
     private Node head;
     private int size = 0;
     private int compares = 0;
+    private int words = 0;
     private ArrayList<Key> forIterating = new ArrayList();
 
     private class Node {
@@ -41,6 +42,8 @@ public class LLSymbolTable<Key, Value> {
 
     //Method that inserts a new key-val pair into linked list
     public void put(Key newKey, Value newVal) {
+        words++;
+
         //Iterate through the LL, if key exists update associated value, if not add it to the beginning of the LL
         for (Node position = head; position != null; position = position.next) {
             compares++;
@@ -67,5 +70,13 @@ public class LLSymbolTable<Key, Value> {
 
     public int size() {
         return size;
+    }
+
+    public int compares() {
+        return compares;
+    }
+
+    public int words() {
+        return words;
     }
 }

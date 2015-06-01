@@ -8,7 +8,8 @@ public class FrequencyCounter {
 
         //Symbol Tables
         //Linked List implementation
-        LLSymbolTable<String, Integer> st = new LLSymbolTable<String, Integer>();
+        LLSymbolTable<String, Integer> llst = new LLSymbolTable<String, Integer>();
+
 
         //Build Symbol Table
         //Read each string in. If it's long enough, try and add it to the Symbol Table.
@@ -16,22 +17,28 @@ public class FrequencyCounter {
         while (!StdIn.isEmpty()) {
             String word = StdIn.readString();
             if (word.length() >= minLength) {
-                if(!st.contains(word)) {
-                    st.put(word, 1);
+                if(!llst.contains(word)) {
+                    llst.put(word, 1);
                 } else {
-                    st.put(word, st.get(word)+1);
+                    llst.put(word, llst.get(word)+1);
                 }
             }
         }
 
+        StdOut.println("Compares: " + llst.compares());
+        StdOut.println("Total Words: " + llst.words());
+        StdOut.println("Distinct Words: " + llst.size());
+
         String max = "";
-        st.put(max,0);
-        for(String word : st.keys()) {
-            if (st.get(word) > st.get(max)) {
+        llst.put(max,0);
+        for(String word : llst.keys()) {
+            if (llst.get(word) > llst.get(max)) {
                 max = word;
             }
         }
-        StdOut.println("Max: " + max + " " + st.get(max));
+        StdOut.println("Most Frequent Word: " + max + " " + llst.get(max));
+
+
     }
 }
 
