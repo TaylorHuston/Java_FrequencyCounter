@@ -1,4 +1,4 @@
-#Symbol Table
+#Symbol Tables
 
 Demonstrates various implementations of a symbol table and analyzes their relative performance.
 
