@@ -10,10 +10,12 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
     private Key[] keys;
     private Value[] vals;
     private int size = 0;
+    private int compares = 0;
+    private int words = 0;
 
 
     public BSSymbolTable(int size) {
-        keys = (Key[]) new Comparable[size];
+        keys = (Key[])   new Comparable[size];
         vals = (Value[]) new Object[size];
     }
 
@@ -51,6 +53,7 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
     }
 
     public int rank (Key key, int lo, int hi) {
+        compares++;
         if (hi < lo) {
             return lo;
         }
@@ -87,6 +90,8 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
 
     //Place a new key-value pair into Symbol Table
     public void put(Key newKey, Value newVal) {
+        words++;
+
         //The position where the key should be
         int i = rank(newKey);
 
@@ -206,7 +211,6 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
         delete(keys[size-1]);
     }
 
-
     public Iterable<Key> keys() {
         ArrayList<Key> forIterating = new ArrayList();
         for (int i = 0; i < size; i++) {
@@ -215,6 +219,15 @@ public class BSSymbolTable<Key extends Comparable<Key>, Value> {
         return forIterating;
     }
 
+    public int compares() {
+       return compares;
+    }
+
+    public int words() {
+        return words;
+    }
+
+    //Test Client
     public static void main(String[] args) {
         BSSymbolTable<Integer, String> testBSST = new BSSymbolTable<Integer, String>();
 

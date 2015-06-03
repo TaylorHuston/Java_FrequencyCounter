@@ -28,6 +28,7 @@ public class LLSymbolTable<Key, Value> {
     public Value get(Key toGet) {
         //Iterate through LL, if a matching key is found return the associated value
         for (Node position = head; position != null; position = position.next) {
+            compares++;
             if (toGet.equals(position.key)) {
                 return position.val;
             }
