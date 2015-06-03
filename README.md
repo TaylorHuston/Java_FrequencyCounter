@@ -1,3 +1,5 @@
-# Java Symbol Table
-Demonstrates a symbol table implemented in various tree-based ways.<br />
+#Symbol Table
+
+Demonstrates various implementations of a symbol table and analyzes their relative performance.
+
 Initially based on <a href="http://algs4.cs.princeton.edu/home/" target="_blank">Algorithms, 4th Ed.</a>
