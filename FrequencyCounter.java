@@ -30,7 +30,7 @@ public class FrequencyCounter {
                 if(!bsst.contains(word)) {
                     bsst.put(word, 1);
                 } else {
-                    bsst.put(word, llst.get(word)+1);
+                    bsst.put(word, bsst.get(word)+1);
                 }
             }
         }
