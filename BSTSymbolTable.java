@@ -79,26 +79,26 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
     }
 
     //Recursively traverse as far left as you can
-    public Key min() {
+    public Node min() {
         return min(root);
     }
 
-    public Key min(Node current) {
+    public Node min(Node current) {
         if (current.left == null) {
-            return current.key;
+            return current;
         } else {
             return min(current.left);
         }
     }
 
     //Recursively travel as far right as you can
-    public Key max() {
+    public Node max() {
         return max(root);
     }
 
-    public Key max(Node current) {
+    public Node max(Node current) {
         if (current.right == null) {
-            return current.key;
+            return current;
         } else {
             return max(current.right);
         }
@@ -209,8 +209,74 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
     }
 
 
+    //Delete the smallest element
+    public void deleteMin() {
+        if (isEmpty()) throw new NoSuchElementException("Symbol table empty");
+        root = deleteMin(root);
+    }
+
+    public Node deleteMin(Node current) {
+        if (current.left == null) {
+            return current.right;
+        }
+
+        current.left = deleteMin(current.left);
+        current.size = size(current.left) + size(current.right) +1;
+
+        return current;
+    }
+
+    public void deleteMax() {
+        if (isEmpty()) throw new NoSuchElementException("Symbol table empty");
+        root = deleteMax(root);
+    }
+
+    public Node deleteMax(Node current) {
+        if (current.right == null) {
+            return current.left;
+        }
+
+        current.right = deleteMax(current.right);
+        current.size = size(current.left) + size(current.right) +1;
+
+        return current;
+    }
+
     public boolean contains(Key searchKey) {
         return get(searchKey) != null;
+    }
+
+    //Recursively search through the BST to find the matching Key
+    //If the matching node contains two children, replace it with it's successor
+    public void delete (Key toDelete) {
+        root = delete (root, toDelete);
+    }
+
+    public Node delete (Node current, Key toDelete) {
+        if (current == null) {
+            return null;
+        }
+
+        int cmp = toDelete.compareTo(current.key);
+
+        if (cmp < 0) {
+            current.left = delete(current.left, toDelete);
+        } else if (cmp > 0) {
+            current.right = delete(current.right, toDelete);
+        } else {
+            if (current.right == null) {
+                return current.left;
+            } else if (current.left == null) {
+                return current.right;
+            } else {
+                Node temp = current;
+                current = min(temp.right);
+                current.right = deleteMin(temp.right);
+                current.left = temp.left;
+            }
+        }
+        current.size = size(current.left) + size(current.right) + 1;
+        return current;
     }
 
     public Iterable<Key> keys() {
@@ -256,16 +322,20 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         return words;
     }
 
+    public boolean isEmpty() {
+        return (root == null);
+    }
+
     //Test client for BST Symbol Table
     public static void main(String[] args) {
         BSTSymbolTable<Integer, String> testBSTST = new BSTSymbolTable<Integer, String>();
 
-//        try {
-//            testBSST.deleteMin();
-//            testBSST.deleteMax();
-//        } catch (NoSuchElementException e) {
-//            StdOut.println(e.getMessage());
-//        }
+        try {
+            testBSTST.deleteMin();
+            testBSTST.deleteMax();
+        } catch (NoSuchElementException e) {
+            StdOut.println(e.getMessage());
+        }
 
 
         testBSTST.put(3, "Three");
@@ -281,7 +351,7 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         StdOut.println("Size: " + testBSTST.size());
         StdOut.println();
 
-        //testBSTST.delete(3);
+        testBSTST.delete(3);
 
         for (Integer myInt : testBSTST.keys()) {
             StdOut.println(myInt + " " + testBSTST.get(myInt));
@@ -289,8 +359,8 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         StdOut.println("Size: " + testBSTST.size());
         StdOut.println();
 
-//        testBSTST.deleteMin();
-//        testBSTST.deleteMax();
+        testBSTST.deleteMin();
+        testBSTST.deleteMax();
 
         for (Integer myInt : testBSTST.keys()) {
             StdOut.println(myInt + " " + testBSTST.get(myInt));
@@ -301,13 +371,15 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         testBSTST.put(3, "Three");
         testBSTST.put(1, "One");
         testBSTST.put(5, "Five");
+        testBSTST.put(10, "Ten");
 
         for (Integer myInt : testBSTST.keys()) {
             StdOut.println(myInt + " " + testBSTST.get(myInt));
         }
         StdOut.println("Size: " + testBSTST.size());
-        StdOut.println("Min: " + testBSTST.min());
-        StdOut.println("Max: " + testBSTST.max());
+        StdOut.println();
+        StdOut.println("Min: " + testBSTST.min().key);
+        StdOut.println("Max: " + testBSTST.max().key);
         StdOut.println("Floor of 4: " + testBSTST.floor(4));
         StdOut.println("Ceiling of 4: " + testBSTST.ceiling(4));
         StdOut.println("Floor of 3: " + testBSTST.floor(3));
