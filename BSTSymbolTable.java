@@ -158,7 +158,7 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
             return ceiling(current.right, searchKey);
         }
 
-        Node ceiling = floor(current.left, searchKey);
+        Node ceiling = ceiling(current.left, searchKey);
         if (ceiling != null) {
             return ceiling;
         } else {
@@ -313,7 +313,7 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         StdOut.println("Floor of 3: " + testBSTST.floor(3));
         StdOut.println("Ceiling of 3: " + testBSTST.ceiling(3));
         StdOut.println("Floor of 0: " + testBSTST.floor(0));
-        StdOut.println("Ceiling of 6: " + testBSTST.ceiling(6));
+        StdOut.println("Ceiling of 11: " + testBSTST.ceiling(11));
         StdOut.println("Floor of 7: " + testBSTST.floor(7));
         StdOut.println("Ceiling of 7: " + testBSTST.ceiling(7));
         StdOut.println("Binary Tree contains 5: " + testBSTST.contains(5));
