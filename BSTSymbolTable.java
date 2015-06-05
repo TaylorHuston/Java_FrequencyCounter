@@ -79,18 +79,30 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
 
     }
 
-    public Value min() {
+    public Key min() {
         return min(root);
-
     }
 
-    public Value min(Node current) {
+    public Key min(Node current) {
         if (current.left == null) {
-            return current.val;
+            return current.key;
         } else {
             return min(current.left);
         }
     }
+
+    public Key max() {
+        return max(root);
+    }
+
+    public Key max(Node current) {
+        if (current.right == null) {
+            return current.key;
+        } else {
+            return max(current.right);
+        }
+    }
+
 
     public boolean contains(Key searchKey) {
         return get(searchKey) != null;
@@ -170,7 +182,7 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         }
         StdOut.println("Size: " + testBSTST.size());
         StdOut.println("Min: " + testBSTST.min());
-//        StdOut.println("Max: " + testBSTST.max());
+        StdOut.println("Max: " + testBSTST.max());
 //        StdOut.println("Floor of 4: " + testBSTST.floor(4));
 //        StdOut.println("Ceiling of 4: " + testBSTST.ceiling(4));
 //        StdOut.println("Floor of 3: " + testBSTST.floor(3));
