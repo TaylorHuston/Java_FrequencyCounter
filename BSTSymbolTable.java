@@ -79,6 +79,7 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
 
     }
 
+    //Recursively traverse as far left as you can
     public Key min() {
         return min(root);
     }
@@ -91,6 +92,7 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
+    //Recursively travel as far right as you can
     public Key max() {
         return max(root);
     }
@@ -102,6 +104,69 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
             return max(current.right);
         }
     }
+
+    //Recursively traverse until you find the largest key that is <= the search key
+    public Key floor(Key searchKey) {
+        Node floor = floor(root, searchKey);
+        if (floor == null) {
+            return null;
+        } else {
+            return floor.key;
+        }
+    }
+
+    public Node floor(Node current, Key searchKey) {
+        if (current == null) {
+            return null;
+        }
+
+        int cmp = searchKey.compareTo(current.key);
+
+        if (cmp == 0) {
+            return current;
+        } else if (cmp < 0) {
+            return floor(current.left, searchKey);
+        }
+
+        Node floor = floor(current.right, searchKey);
+        if (floor != null) {
+            return floor;
+        } else {
+            return current;
+        }
+    }
+
+    //Recursively traverse until you find the largest key that is <= the search key
+    public Key ceiling(Key searchKey) {
+        Node ceiling = ceiling(root, searchKey);
+        if (ceiling == null) {
+            return null;
+        } else {
+            return ceiling.key;
+        }
+    }
+
+    public Node ceiling(Node current, Key searchKey) {
+        if (current == null) {
+            return null;
+        }
+
+        int cmp = searchKey.compareTo(current.key);
+
+        if (cmp == 0) {
+            return current;
+        } else if (cmp > 0) {
+            return ceiling(current.right, searchKey);
+        }
+
+        Node ceiling = floor(current.left, searchKey);
+        if (ceiling != null) {
+            return ceiling;
+        } else {
+            return current;
+        }
+    }
+
 
 
     public boolean contains(Key searchKey) {
@@ -183,12 +248,12 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         StdOut.println("Size: " + testBSTST.size());
         StdOut.println("Min: " + testBSTST.min());
         StdOut.println("Max: " + testBSTST.max());
-//        StdOut.println("Floor of 4: " + testBSTST.floor(4));
-//        StdOut.println("Ceiling of 4: " + testBSTST.ceiling(4));
-//        StdOut.println("Floor of 3: " + testBSTST.floor(3));
-//        StdOut.println("Ceiling of 3: " + testBSTST.ceiling(3));
-//        StdOut.println("Floor of 0: " + testBSTST.floor(0));
-//        StdOut.println("Ceiling of 6: " + testBSTST.ceiling(6));
+        StdOut.println("Floor of 4: " + testBSTST.floor(4));
+        StdOut.println("Ceiling of 4: " + testBSTST.ceiling(4));
+        StdOut.println("Floor of 3: " + testBSTST.floor(3));
+        StdOut.println("Ceiling of 3: " + testBSTST.ceiling(3));
+        StdOut.println("Floor of 0: " + testBSTST.floor(0));
+        StdOut.println("Ceiling of 6: " + testBSTST.ceiling(6));
 //        StdOut.println("Array contains 5: " + testBSTST.contains(5));
 //        StdOut.println("Array contains 6: " + testBSTST.contains(6));
 //        StdOut.println("Key at rank 3: " + testBSTST.select(3));
