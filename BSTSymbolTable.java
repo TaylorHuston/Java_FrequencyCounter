@@ -22,7 +22,6 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
             this.key = key;
             this.val = val;
             this.size = size;
-            forIterating.add(key);
         }
     }
 
@@ -136,7 +135,7 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
-    //Recursively traverse until you find the largest key that is <= the search key
+    //Recursively traverse until you find the smallest key that is >= the search key
     public Key ceiling(Key searchKey) {
         Node ceiling = ceiling(root, searchKey);
         if (ceiling == null) {
@@ -167,6 +166,47 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
+    //Find the key with rank N (meaning the key where exactly N other keys are smaller)
+    public Key select(int selectN) {
+        return select(root, selectN).key;
+    }
+
+    public Node select(Node current, int selectN) {
+        if (current == null) {
+            return null;
+        }
+
+        int t = size(current.left);
+
+        if (t > selectN) {
+            return select(current.left, selectN);
+        } else if ( t < selectN) {
+            return select(current.right, selectN-t-1);
+        } else  {
+            return current;
+        }
+    }
+
+    //How many keys are < searchKey?
+    public int rank (Key searchKey) {
+        return rank(searchKey, root);
+    }
+
+    public int rank (Key searchKey, Node current) {
+        if (current == null) {
+            return 0;
+        }
+
+        int cmp = searchKey.compareTo(current.key);
+
+        if (cmp < 0) {
+            return rank(searchKey, current.left);
+        } else if (cmp > 0) {
+            return 1 + size(current.left) + rank(searchKey, current.right);
+        } else {
+            return size(current.left);
+        }
+    }
 
 
     public boolean contains(Key searchKey) {
@@ -174,7 +214,26 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
     }
 
     public Iterable<Key> keys() {
+        forIterating = new ArrayList();
+
+        inOrder(root);
+
         return forIterating;
+    }
+
+    private Key inOrder (Node current) {
+        if(current.left != null) {
+            inOrder(current.left);
+        }
+
+        forIterating.add(current.key);
+
+        if (current.right != null) {
+            inOrder(current.right);
+        }
+
+
+        return current.key;
     }
 
     public int size() {
@@ -214,6 +273,7 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         testBSTST.put(2, "Two");
         testBSTST.put(4, "Four");
         testBSTST.put(1, "OneOne");
+        testBSTST.put(10, "Ten");
 
         for (Integer myInt : testBSTST.keys()) {
             StdOut.println(myInt + " " + testBSTST.get(myInt));
@@ -254,9 +314,14 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         StdOut.println("Ceiling of 3: " + testBSTST.ceiling(3));
         StdOut.println("Floor of 0: " + testBSTST.floor(0));
         StdOut.println("Ceiling of 6: " + testBSTST.ceiling(6));
-//        StdOut.println("Array contains 5: " + testBSTST.contains(5));
-//        StdOut.println("Array contains 6: " + testBSTST.contains(6));
-//        StdOut.println("Key at rank 3: " + testBSTST.select(3));
+        StdOut.println("Floor of 7: " + testBSTST.floor(7));
+        StdOut.println("Ceiling of 7: " + testBSTST.ceiling(7));
+        StdOut.println("Binary Tree contains 5: " + testBSTST.contains(5));
+        StdOut.println("Binary Tree contains 6: " + testBSTST.contains(6));
+        StdOut.println("Key at rank 3: " + testBSTST.select(3));
+        StdOut.println("Key at rank 5: " + testBSTST.select(5));
+        StdOut.println("Rank of key 3: " + testBSTST.rank(3));
+        StdOut.println("Rank of key 10: " + testBSTST.rank(10));
 
 
     }
