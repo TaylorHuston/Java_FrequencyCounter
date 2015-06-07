@@ -38,6 +38,27 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         return x.color == RED;
     }
 
+    Node rotateLeft(Node toRotate) {
+        Node temp = toRotate.right;
+        toRotate.right = temp.left;
+        temp.color = toRotate.color;
+        toRotate.color = RED;
+        temp.size = toRotate.size;
+        toRotate.size = 1 + size(toRotate.left) + size(toRotate.right);
+        return temp;
+    }
+
+    Node rotateRight(Node toRotate) {
+        Node temp = toRotate.left;
+        toRotate.left = temp.right;
+        temp.color = toRotate.color;
+        toRotate.color = RED;
+        temp.size = toRotate.size;
+        toRotate.size = 1 + size(toRotate.left) + size(toRotate.right);
+        return temp;
+    }
+
+
     public Value get(Key searchKey) {
         return get(root, searchKey);
     }
