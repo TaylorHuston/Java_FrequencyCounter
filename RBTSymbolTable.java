@@ -11,17 +11,31 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
     private int words = 0;
     ArrayList<Key> forIterating = new ArrayList();
 
+    //For Red-Black implementation
+    private static final boolean RED = true;
+    private static final boolean BLACk = false;
+
     private class Node {
         private Key key;
         private Value val;
         private Node left, right;
         private int size;
+        boolean color; //Color of the link from the parent to this node
 
-        public Node(Key key, Value val, int size) {
+        public Node(Key key, Value val, int size, boolean color) {
             this.key = key;
             this.val = val;
             this.size = size;
+            this.color = color;
         }
+    }
+
+    private boolean isRead(Node x) {
+        if (x == null) {
+            return false;
+        }
+
+        return x.color == RED;
     }
 
     public Value get(Key searchKey) {
