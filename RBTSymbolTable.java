@@ -30,6 +30,11 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
+    /**********
+     * Red-Black Helper Functions
+     **********/
+
+    //Is this node Red?
     private boolean isRed(Node x) {
         if (x == null) {
             return false;
@@ -38,9 +43,11 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         return x.color == RED;
     }
 
+    //Make right-leaning link lean left
     private Node rotateLeft(Node toRotate) {
         Node temp = toRotate.right;
         toRotate.right = temp.left;
+        temp.left = toRotate;
         temp.color = toRotate.color;
         toRotate.color = RED;
         temp.size = toRotate.size;
@@ -48,9 +55,11 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         return temp;
     }
 
+    //Make left-leaning link lean right
     private Node rotateRight(Node toRotate) {
         Node temp = toRotate.left;
         toRotate.left = temp.right;
+        temp.right = toRotate;
         temp.color = toRotate.color;
         toRotate.color = RED;
         temp.size = toRotate.size;
@@ -58,12 +67,64 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         return temp;
     }
 
+    //Change a node with two red links to a node with two black links
     private void flipColors(Node toFlip) {
         toFlip.color = RED;
         toFlip.left.color = BLACK;
         toFlip.right.color = BLACK;
     }
 
+    //Assume that current is red and both current.left and current.left.left are black,
+    //make current.left or one of it's children red
+    private Node moveRedLeft(Node current) {
+        flipColors(current);
+
+        if (isRed(current.right.left)) {
+            current.right = rotateRight(current.right);
+            current = rotateLeft(current);
+            flipColors(current);
+        }
+
+        return current;
+    }
+
+    //Assume that current is red and both current.left and current.right.left are black,
+    //make current.right or one of it's children red
+    private Node moveRedRight(Node current) {
+        flipColors(current);
+
+        if (isRed(current.left.left)) {
+            current = rotateRight(current);
+            flipColors(current);
+        }
+
+        return current;
+    }
+
+    //Ensure red-black balance
+    private Node balance(Node current) {
+        if (isRed(current.right)) {
+            current = rotateLeft(current);
+        }
+
+        if (isRed(current.left) && isRed(current.left.left)) {
+            current = rotateRight(current);
+        }
+
+        if (isRed(current.left) && isRed(current.right)) {
+            flipColors(current);
+        }
+
+        current.size = size(current.left) + size(current.right) +1;
+
+        return current;
+    }
+
+
+    /**********
+     * Search/Retrieval Functions
+     **********/
+    //Return the node with the matching searchKey
     public Value get(Key searchKey) {
         return get(root, searchKey);
     }
@@ -85,50 +146,6 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         } else {
             return current.val;
         }
-    }
-
-    //Put works by recursively either creating a new node if needed, or assigning each node to itself
-    public void put(Key key, Value newVal) {
-        words++;
-        root = put(root, key, newVal);
-        root.color = BLACK;
-    }
-
-    //Recursively inserts a new node, then rotates as needed, passing RED links up the chain
-    public Node put(Node current, Key searchKey, Value newVal) {
-        compares++;
-
-        //Search to see if searchKey exists in BST, if not add it
-        if (current == null) {
-            return new Node(searchKey, newVal, 1, RED);
-        }
-
-        int cmp = searchKey.compareTo(current.key);
-
-        //Use compare value to traverse through tree
-        if (cmp < 0) {
-            current.left = put(current.left, searchKey, newVal);
-        } else if (cmp > 0) {
-            current.right = put(current.right, searchKey, newVal);
-        } else {
-            current.val = newVal;
-        }
-
-        //Fix RED links
-        if (isRed(current.right) && !isRed(current.left)) {
-            current = rotateLeft(current);
-        }
-        if (isRed(current.left) && isRed(current.left.left)) {
-            current = rotateRight(current);
-        }
-        if (isRed(current.left) && isRed(current.right)) {
-            flipColors(current);
-        }
-
-        current.size = size(current.left) + size(current.right) +1;
-
-        return current;
-
     }
 
     //Recursively traverse as far left as you can
@@ -261,21 +278,84 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
+
+    /**********
+     * Insertion Functions
+     **********/
+    //Put works by recursively either creating a new node if needed, or assigning each node to itself
+    public void put(Key key, Value newVal) {
+        words++;
+        root = put(root, key, newVal);
+        root.color = BLACK;
+    }
+
+    //Recursively inserts a new node, then rotates as needed, passing RED links up the chain
+    public Node put(Node current, Key searchKey, Value newVal) {
+        compares++;
+
+        if (current == null) {
+            return new Node(searchKey, newVal, 1, RED);
+        }
+
+        int cmp = searchKey.compareTo(current.key);
+
+        //Use compare value to traverse through tree
+        if (cmp < 0) {
+            current.left = put(current.left, searchKey, newVal);
+        } else if (cmp > 0) {
+            current.right = put(current.right, searchKey, newVal);
+        } else {
+            current.val = newVal;
+        }
+
+        //Fix RED links
+        if (isRed(current.right) && !isRed(current.left)) {
+            current = rotateLeft(current);
+        }
+        if (isRed(current.left) && isRed(current.left.left)) {
+            current = rotateRight(current);
+        }
+        if (isRed(current.left) && isRed(current.right)) {
+            flipColors(current);
+        }
+
+        current.size = size(current.left) + size(current.right) +1;
+
+        return current;
+
+    }
+
+
+    /**********
+     * Deletion functions
+     **********/
     //Delete the smallest element
     public void deleteMin() {
-        if (isEmpty()) throw new NoSuchElementException("Symbol table empty");
+        if (isEmpty()) throw new NoSuchElementException("Red Black tree is empty");
+
+        //If both children of root are black, set root to red
+        if (!isRed(root.left) && !isRed(root.right)) {
+            root.color = RED;
+        }
+
         root = deleteMin(root);
+        if (!isEmpty()) {
+            root.color = BLACK;
+        }
     }
 
     public Node deleteMin(Node current) {
         if (current.left == null) {
-            return current.right;
+            return null;
         }
 
-        current.left = deleteMin(current.left);
-        current.size = size(current.left) + size(current.right) +1;
+        if (!isRed(current.left) && !isRed(current.left.left)) {
+            current = moveRedLeft(current);
+        }
 
-        return current;
+        current.left = (deleteMin(current.left));
+
+        return balance(current);
     }
 
     //Delete largest element
@@ -383,12 +463,12 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
     public static void main(String[] args) {
         RBTSymbolTable<Integer, String> testRBT = new RBTSymbolTable<Integer, String>();
 
-//        try {
-//            testRBT.deleteMin();
+        try {
+            testRBT.deleteMin();
 //            testRBT.deleteMax();
-//        } catch (NoSuchElementException e) {
-//            StdOut.println(e.getMessage());
-//        }
+        } catch (NoSuchElementException e) {
+            StdOut.println(e.getMessage());
+        }
 
 
         testRBT.put(3, "Three");
@@ -404,7 +484,7 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         StdOut.println("Size: " + testRBT.size());
         StdOut.println();
 
-        testRBT.delete(3);
+//        testRBT.delete(3);
 
         for (Integer myInt : testRBT.keys()) {
             StdOut.println(myInt + " " + testRBT.get(myInt));
@@ -412,7 +492,7 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         StdOut.println("Size: " + testRBT.size());
         StdOut.println();
 
-//        testRBT.deleteMin();
+        testRBT.deleteMin();
 //        testRBT.deleteMax();
 
         for (Integer myInt : testRBT.keys()) {
@@ -421,7 +501,7 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         StdOut.println("Size: " + testRBT.size());
         StdOut.println();
 
-        testRBT.put(3, "Three");
+        testRBT.put(3, "ThreeThree");
         testRBT.put(1, "One");
         testRBT.put(5, "Five");
         testRBT.put(10, "Ten");
