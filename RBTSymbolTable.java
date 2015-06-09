@@ -2,7 +2,8 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 /**
- Symbol Table implemented with a Red Black Tree
+ Symbol Table implemented with a Left Leaning Red Black Tree
+ Based on Algorithms, 4th Ed by Robert Sedgewick | Kevin Wayne
  */
 public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
 
@@ -69,9 +70,9 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
 
     //Change a node with two red links to a node with two black links
     private void flipColors(Node toFlip) {
-        toFlip.color = RED;
-        toFlip.left.color = BLACK;
-        toFlip.right.color = BLACK;
+        toFlip.color = !toFlip.color;
+        toFlip.left.color = !toFlip.left.color;
+        toFlip.right.color = !toFlip.right.color;
     }
 
     //Assume that current is red and both current.left and current.left.left are black,
@@ -95,7 +96,6 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
 
         if (isRed(current.left.left)) {
             current = rotateRight(current);
-            flipColors(current);
         }
 
         return current;
@@ -361,18 +361,34 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
     //Delete largest element
     public void deleteMax() {
         if (isEmpty()) throw new NoSuchElementException("Symbol table empty");
+
+        //If both children of root are black, set root to red
+        if (!isRed(root.left) && isRed(root.right)) {
+            root.color = RED;
+        }
         root = deleteMax(root);
+
+        if (!isEmpty()) {
+            root.color = BLACK;
+        }
     }
 
-    public Node deleteMax(Node current) {
+    private Node deleteMax(Node current) {
+        if (isRed(current.left)) {
+            current = rotateRight(current);
+        }
+
         if (current.right == null) {
-            return current.left;
+            return null;
+        }
+
+        if (!isRed(current.right) && !isRed(current.right.left)) {
+            current = moveRedRight(current);
         }
 
         current.right = deleteMax(current.right);
-        current.size = size(current.left) + size(current.right) +1;
 
-        return current;
+        return balance(current);
     }
 
     public boolean contains(Key searchKey) {
@@ -465,7 +481,7 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
 
         try {
             testRBT.deleteMin();
-//            testRBT.deleteMax();
+            testRBT.deleteMax();
         } catch (NoSuchElementException e) {
             StdOut.println(e.getMessage());
         }
@@ -493,7 +509,7 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         StdOut.println();
 
         testRBT.deleteMin();
-//        testRBT.deleteMax();
+        testRBT.deleteMax();
 
         for (Integer myInt : testRBT.keys()) {
             StdOut.println(myInt + " " + testRBT.get(myInt));
@@ -509,24 +525,24 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         for (Integer myInt : testRBT.keys()) {
             StdOut.println(myInt + " " + testRBT.get(myInt));
         }
-//        StdOut.println("Size: " + testRBT.size());
-//        StdOut.println();
-//        StdOut.println("Min: " + testRBT.min().key);
-//        StdOut.println("Max: " + testRBT.max().key);
-//        StdOut.println("Floor of 4: " + testRBT.floor(4));
-//        StdOut.println("Ceiling of 4: " + testRBT.ceiling(4));
-//        StdOut.println("Floor of 3: " + testRBT.floor(3));
-//        StdOut.println("Ceiling of 3: " + testRBT.ceiling(3));
-//        StdOut.println("Floor of 0: " + testRBT.floor(0));
-//        StdOut.println("Ceiling of 11: " + testRBT.ceiling(11));
-//        StdOut.println("Floor of 7: " + testRBT.floor(7));
-//        StdOut.println("Ceiling of 7: " + testRBT.ceiling(7));
-//        StdOut.println("Binary Tree contains 5: " + testRBT.contains(5));
-//        StdOut.println("Binary Tree contains 6: " + testRBT.contains(6));
-//        StdOut.println("Key at rank 3: " + testRBT.select(3));
-//        StdOut.println("Key at rank 5: " + testRBT.select(5));
-//        StdOut.println("Rank of key 3: " + testRBT.rank(3));
-//        StdOut.println("Rank of key 10: " + testRBT.rank(10));
+        StdOut.println("Size: " + testRBT.size());
+        StdOut.println();
+        StdOut.println("Min: " + testRBT.min().key);
+        StdOut.println("Max: " + testRBT.max().key);
+        StdOut.println("Floor of 4: " + testRBT.floor(4));
+        StdOut.println("Ceiling of 4: " + testRBT.ceiling(4));
+        StdOut.println("Floor of 3: " + testRBT.floor(3));
+        StdOut.println("Ceiling of 3: " + testRBT.ceiling(3));
+        StdOut.println("Floor of 0: " + testRBT.floor(0));
+        StdOut.println("Ceiling of 11: " + testRBT.ceiling(11));
+        StdOut.println("Floor of 7: " + testRBT.floor(7));
+        StdOut.println("Ceiling of 7: " + testRBT.ceiling(7));
+        StdOut.println("Binary Tree contains 5: " + testRBT.contains(5));
+        StdOut.println("Binary Tree contains 6: " + testRBT.contains(6));
+        StdOut.println("Key at rank 3: " + testRBT.select(3));
+        StdOut.println("Key at rank 5: " + testRBT.select(5));
+        StdOut.println("Rank of key 3: " + testRBT.rank(3));
+        StdOut.println("Rank of key 10: " + testRBT.rank(10));
 
 
     }
