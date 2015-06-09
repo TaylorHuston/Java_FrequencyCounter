@@ -13,7 +13,7 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
 
     //For Red-Black implementation
     private static final boolean RED = true;
-    private static final boolean BLACk = false;
+    private static final boolean BLACK = false;
 
     private class Node {
         private Key key;
@@ -30,7 +30,7 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
-    private boolean isRead(Node x) {
+    private boolean isRed(Node x) {
         if (x == null) {
             return false;
         }
@@ -38,7 +38,7 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         return x.color == RED;
     }
 
-    Node rotateLeft(Node toRotate) {
+    private Node rotateLeft(Node toRotate) {
         Node temp = toRotate.right;
         toRotate.right = temp.left;
         temp.color = toRotate.color;
@@ -48,7 +48,7 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         return temp;
     }
 
-    Node rotateRight(Node toRotate) {
+    private Node rotateRight(Node toRotate) {
         Node temp = toRotate.left;
         toRotate.left = temp.right;
         temp.color = toRotate.color;
@@ -58,6 +58,11 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         return temp;
     }
 
+    private void flipColors(Node toFlip) {
+        toFlip.color = RED;
+        toFlip.left.color = BLACK;
+        toFlip.right.color = BLACK;
+    }
 
     public Value get(Key searchKey) {
         return get(root, searchKey);
@@ -86,14 +91,16 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
     public void put(Key key, Value newVal) {
         words++;
         root = put(root, key, newVal);
+        root.color = BLACK;
     }
 
+    //Recursively inserts a new node, then rotates as needed, passing RED links up the chain
     public Node put(Node current, Key searchKey, Value newVal) {
         compares++;
 
         //Search to see if searchKey exists in BST, if not add it
         if (current == null) {
-            return new Node(searchKey, newVal, 1);
+            return new Node(searchKey, newVal, 1, RED);
         }
 
         int cmp = searchKey.compareTo(current.key);
@@ -106,6 +113,18 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         } else {
             current.val = newVal;
         }
+
+        //Fix RED links
+        if (isRed(current.right) && !isRed(current.left)) {
+            current = rotateLeft(current);
+        }
+        if (isRed(current.left) && isRed(current.left.left)) {
+            current = rotateRight(current);
+        }
+        if (isRed(current.left) && isRed(current.right)) {
+            flipColors(current);
+        }
+
         current.size = size(current.left) + size(current.right) +1;
 
         return current;
@@ -242,7 +261,6 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
-
     //Delete the smallest element
     public void deleteMin() {
         if (isEmpty()) throw new NoSuchElementException("Symbol table empty");
@@ -260,6 +278,7 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         return current;
     }
 
+    //Delete largest element
     public void deleteMax() {
         if (isEmpty()) throw new NoSuchElementException("Symbol table empty");
         root = deleteMax(root);
@@ -362,73 +381,73 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
 
     //Test client for BST Symbol Table
     public static void main(String[] args) {
-//        RBTSymbolTable<Integer, String> testBSTST = new BSTSymbolTable<Integer, String>();
-//
+        RBTSymbolTable<Integer, String> testRBT = new RBTSymbolTable<Integer, String>();
+
 //        try {
-//            testBSTST.deleteMin();
-//            testBSTST.deleteMax();
+//            testRBT.deleteMin();
+//            testRBT.deleteMax();
 //        } catch (NoSuchElementException e) {
 //            StdOut.println(e.getMessage());
 //        }
-//
-//
-//        testBSTST.put(3, "Three");
-//        testBSTST.put(1, "One");
-//        testBSTST.put(2, "Two");
-//        testBSTST.put(4, "Four");
-//        testBSTST.put(1, "OneOne");
-//        testBSTST.put(10, "Ten");
-//
-//        for (Integer myInt : testBSTST.keys()) {
-//            StdOut.println(myInt + " " + testBSTST.get(myInt));
-//        }
-//        StdOut.println("Size: " + testBSTST.size());
+
+
+        testRBT.put(3, "Three");
+        testRBT.put(1, "One");
+        testRBT.put(2, "Two");
+        testRBT.put(4, "Four");
+        testRBT.put(1, "OneOne");
+        testRBT.put(10, "Ten");
+
+        for (Integer myInt : testRBT.keys()) {
+            StdOut.println(myInt + " " + testRBT.get(myInt));
+        }
+        StdOut.println("Size: " + testRBT.size());
+        StdOut.println();
+
+        testRBT.delete(3);
+
+        for (Integer myInt : testRBT.keys()) {
+            StdOut.println(myInt + " " + testRBT.get(myInt));
+        }
+        StdOut.println("Size: " + testRBT.size());
+        StdOut.println();
+
+//        testRBT.deleteMin();
+//        testRBT.deleteMax();
+
+        for (Integer myInt : testRBT.keys()) {
+            StdOut.println(myInt + " " + testRBT.get(myInt));
+        }
+        StdOut.println("Size: " + testRBT.size());
+        StdOut.println();
+
+        testRBT.put(3, "Three");
+        testRBT.put(1, "One");
+        testRBT.put(5, "Five");
+        testRBT.put(10, "Ten");
+
+        for (Integer myInt : testRBT.keys()) {
+            StdOut.println(myInt + " " + testRBT.get(myInt));
+        }
+//        StdOut.println("Size: " + testRBT.size());
 //        StdOut.println();
-//
-//        testBSTST.delete(3);
-//
-//        for (Integer myInt : testBSTST.keys()) {
-//            StdOut.println(myInt + " " + testBSTST.get(myInt));
-//        }
-//        StdOut.println("Size: " + testBSTST.size());
-//        StdOut.println();
-//
-//        testBSTST.deleteMin();
-//        testBSTST.deleteMax();
-//
-//        for (Integer myInt : testBSTST.keys()) {
-//            StdOut.println(myInt + " " + testBSTST.get(myInt));
-//        }
-//        StdOut.println("Size: " + testBSTST.size());
-//        StdOut.println();
-//
-//        testBSTST.put(3, "Three");
-//        testBSTST.put(1, "One");
-//        testBSTST.put(5, "Five");
-//        testBSTST.put(10, "Ten");
-//
-//        for (Integer myInt : testBSTST.keys()) {
-//            StdOut.println(myInt + " " + testBSTST.get(myInt));
-//        }
-//        StdOut.println("Size: " + testBSTST.size());
-//        StdOut.println();
-//        StdOut.println("Min: " + testBSTST.min().key);
-//        StdOut.println("Max: " + testBSTST.max().key);
-//        StdOut.println("Floor of 4: " + testBSTST.floor(4));
-//        StdOut.println("Ceiling of 4: " + testBSTST.ceiling(4));
-//        StdOut.println("Floor of 3: " + testBSTST.floor(3));
-//        StdOut.println("Ceiling of 3: " + testBSTST.ceiling(3));
-//        StdOut.println("Floor of 0: " + testBSTST.floor(0));
-//        StdOut.println("Ceiling of 11: " + testBSTST.ceiling(11));
-//        StdOut.println("Floor of 7: " + testBSTST.floor(7));
-//        StdOut.println("Ceiling of 7: " + testBSTST.ceiling(7));
-//        StdOut.println("Binary Tree contains 5: " + testBSTST.contains(5));
-//        StdOut.println("Binary Tree contains 6: " + testBSTST.contains(6));
-//        StdOut.println("Key at rank 3: " + testBSTST.select(3));
-//        StdOut.println("Key at rank 5: " + testBSTST.select(5));
-//        StdOut.println("Rank of key 3: " + testBSTST.rank(3));
-//        StdOut.println("Rank of key 10: " + testBSTST.rank(10));
-//
+//        StdOut.println("Min: " + testRBT.min().key);
+//        StdOut.println("Max: " + testRBT.max().key);
+//        StdOut.println("Floor of 4: " + testRBT.floor(4));
+//        StdOut.println("Ceiling of 4: " + testRBT.ceiling(4));
+//        StdOut.println("Floor of 3: " + testRBT.floor(3));
+//        StdOut.println("Ceiling of 3: " + testRBT.ceiling(3));
+//        StdOut.println("Floor of 0: " + testRBT.floor(0));
+//        StdOut.println("Ceiling of 11: " + testRBT.ceiling(11));
+//        StdOut.println("Floor of 7: " + testRBT.floor(7));
+//        StdOut.println("Ceiling of 7: " + testRBT.ceiling(7));
+//        StdOut.println("Binary Tree contains 5: " + testRBT.contains(5));
+//        StdOut.println("Binary Tree contains 6: " + testRBT.contains(6));
+//        StdOut.println("Key at rank 3: " + testRBT.select(3));
+//        StdOut.println("Key at rank 5: " + testRBT.select(5));
+//        StdOut.println("Rank of key 3: " + testRBT.rank(3));
+//        StdOut.println("Rank of key 10: " + testRBT.rank(10));
+
 
     }
 }
