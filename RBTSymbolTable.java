@@ -395,38 +395,53 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         return get(searchKey) != null;
     }
 
-    //Recursively search through the BST to find the matching Key
-    //If the matching node contains two children, replace it with it's successor
+
     public void delete (Key toDelete) {
-        root = delete (root, toDelete);
+        // if both children of root are black, set root to red
+        if (!isRed(root.left) && !isRed(root.right))
+            root.color = RED;
+
+        root = delete(root, toDelete);
+        if (!isEmpty()) root.color = BLACK;
     }
 
     public Node delete (Node current, Key toDelete) {
-        if (current == null) {
-            return null;
-        }
+        if (toDelete.compareTo(current.key) < 0)  {
 
-        int cmp = toDelete.compareTo(current.key);
+            if (!isRed(current.left) && !isRed(current.left.left)) {
+                current = moveRedLeft(current);
+            }
 
-        if (cmp < 0) {
             current.left = delete(current.left, toDelete);
-        } else if (cmp > 0) {
-            current.right = delete(current.right, toDelete);
-        } else {
-            if (current.right == null) {
-                return current.left;
-            } else if (current.left == null) {
-                return current.right;
+        }
+        else {
+            if (isRed(current.left)) {
+                current = rotateRight(current);
+            }
+
+            if (toDelete.compareTo(current.key) == 0 && (current.right == null)) {
+                return null;
+            }
+
+            if (!isRed(current.right) && !isRed(current.right.left)) {
+                current = moveRedRight(current);
+            }
+
+            if (toDelete.compareTo(current.key) == 0) {
+                Node temp = min(current.right);
+                current.key = temp.key;
+                current.val = temp.val;
+                current.val = get(current.right, min(current.right).key);
+                current.key = min(current.right).key;
+                current.right = deleteMin(current.right);
             } else {
-                Node temp = current;
-                current = min(temp.right);
-                current.right = deleteMin(temp.right);
-                current.left = temp.left;
+                current.right = delete(current.right, toDelete);
             }
         }
-        current.size = size(current.left) + size(current.right) + 1;
-        return current;
+
+        return balance(current);
     }
+
 
     public Iterable<Key> keys() {
         forIterating = new ArrayList();
@@ -500,7 +515,7 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         StdOut.println("Size: " + testRBT.size());
         StdOut.println();
 
-//        testRBT.delete(3);
+        testRBT.delete(3);
 
         for (Integer myInt : testRBT.keys()) {
             StdOut.println(myInt + " " + testRBT.get(myInt));
