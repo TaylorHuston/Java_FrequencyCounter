@@ -4,6 +4,7 @@ import java.util.NoSuchElementException;
 
 /**
  Symbol Table implemented with a Binary Search Tree
+ Based on Algorithms, 4th Ed by Robert Sedgewick | Kevin Wayne
  */
 public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
 
@@ -25,6 +26,12 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
+
+    /**********
+     * Search/Retrieval Methods
+     **********/
+
+    //Return the node with the matching searchKey
     public Value get(Key searchKey) {
         return get(root, searchKey);
     }
@@ -48,37 +55,7 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
-    //Put works by recursively either creating a new node if needed, or assigning each node to itself
-    public void put(Key key, Value newVal) {
-        words++;
-        root = put(root, key, newVal);
-    }
-
-    public Node put(Node current, Key searchKey, Value newVal) {
-        compares++;
-
-        //Search to see if searchKey exists in BST, if not add it
-        if (current == null) {
-            return new Node(searchKey, newVal, 1);
-        }
-
-        int cmp = searchKey.compareTo(current.key);
-
-        //Use compare value to traverse through tree
-        if (cmp < 0) {
-            current.left = put(current.left, searchKey, newVal);
-        } else if (cmp > 0) {
-            current.right = put(current.right, searchKey, newVal);
-        } else {
-            current.val = newVal;
-        }
-        current.size = size(current.left) + size(current.right) +1;
-
-        return current;
-
-    }
-
-    //Recursively traverse as far left as you can
+    //Recursively traverse as far left as you can, retrieve smallest key
     public Node min() {
         return min(root);
     }
@@ -91,7 +68,7 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
-    //Recursively travel as far right as you can
+    //Recursively travel as far right as you can, retrieve largest key
     public Node max() {
         return max(root);
     }
@@ -208,8 +185,52 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
+    //Does the tree contain this searchKey?
+    public boolean contains(Key searchKey) {
+        return get(searchKey) != null;
+    }
 
-    //Delete the smallest element
+
+    /**********
+     * Insertion Methods
+     **********/
+
+    //Put works by recursively either creating a new node if needed, or assigning each node to itself
+    public void put(Key key, Value newVal) {
+        words++;
+        root = put(root, key, newVal);
+    }
+
+    public Node put(Node current, Key searchKey, Value newVal) {
+        compares++;
+
+        //Search to see if searchKey exists in BST, if not add it
+        if (current == null) {
+            return new Node(searchKey, newVal, 1);
+        }
+
+        int cmp = searchKey.compareTo(current.key);
+
+        //Use compare value to traverse through tree
+        if (cmp < 0) {
+            current.left = put(current.left, searchKey, newVal);
+        } else if (cmp > 0) {
+            current.right = put(current.right, searchKey, newVal);
+        } else {
+            current.val = newVal;
+        }
+        current.size = size(current.left) + size(current.right) +1;
+
+        return current;
+
+    }
+
+
+    /**********
+     * Deletion Methods
+     **********/
+
+    //Delete the smallest key
     public void deleteMin() {
         if (isEmpty()) throw new NoSuchElementException("Symbol table empty");
         root = deleteMin(root);
@@ -226,6 +247,7 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         return current;
     }
 
+    //Delete the largest key
     public void deleteMax() {
         if (isEmpty()) throw new NoSuchElementException("Symbol table empty");
         root = deleteMax(root);
@@ -240,10 +262,6 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         current.size = size(current.left) + size(current.right) +1;
 
         return current;
-    }
-
-    public boolean contains(Key searchKey) {
-        return get(searchKey) != null;
     }
 
     //Recursively search through the BST to find the matching Key
@@ -278,6 +296,11 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         current.size = size(current.left) + size(current.right) + 1;
         return current;
     }
+
+
+    /**********
+     * General Utility Methods
+     **********/
 
     public Iterable<Key> keys() {
         forIterating = new ArrayList();
@@ -326,7 +349,11 @@ public class BSTSymbolTable<Key extends Comparable<Key>, Value> {
         return (root == null);
     }
 
-    //Test client for BST Symbol Table
+
+    /**********
+     * Test Client
+     **********/
+
     public static void main(String[] args) {
         BSTSymbolTable<Integer, String> testBSTST = new BSTSymbolTable<Integer, String>();
 

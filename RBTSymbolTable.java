@@ -31,99 +31,11 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
-    /**********
-     * Red-Black Helper Functions
-     **********/
-
-    //Is this node Red?
-    private boolean isRed(Node x) {
-        if (x == null) {
-            return false;
-        }
-
-        return x.color == RED;
-    }
-
-    //Make right-leaning link lean left
-    private Node rotateLeft(Node toRotate) {
-        Node temp = toRotate.right;
-        toRotate.right = temp.left;
-        temp.left = toRotate;
-        temp.color = toRotate.color;
-        toRotate.color = RED;
-        temp.size = toRotate.size;
-        toRotate.size = 1 + size(toRotate.left) + size(toRotate.right);
-        return temp;
-    }
-
-    //Make left-leaning link lean right
-    private Node rotateRight(Node toRotate) {
-        Node temp = toRotate.left;
-        toRotate.left = temp.right;
-        temp.right = toRotate;
-        temp.color = toRotate.color;
-        toRotate.color = RED;
-        temp.size = toRotate.size;
-        toRotate.size = 1 + size(toRotate.left) + size(toRotate.right);
-        return temp;
-    }
-
-    //Change a node with two red links to a node with two black links
-    private void flipColors(Node toFlip) {
-        toFlip.color = !toFlip.color;
-        toFlip.left.color = !toFlip.left.color;
-        toFlip.right.color = !toFlip.right.color;
-    }
-
-    //Assume that current is red and both current.left and current.left.left are black,
-    //make current.left or one of it's children red
-    private Node moveRedLeft(Node current) {
-        flipColors(current);
-
-        if (isRed(current.right.left)) {
-            current.right = rotateRight(current.right);
-            current = rotateLeft(current);
-            flipColors(current);
-        }
-
-        return current;
-    }
-
-    //Assume that current is red and both current.left and current.right.left are black,
-    //make current.right or one of it's children red
-    private Node moveRedRight(Node current) {
-        flipColors(current);
-
-        if (isRed(current.left.left)) {
-            current = rotateRight(current);
-        }
-
-        return current;
-    }
-
-    //Ensure red-black balance
-    private Node balance(Node current) {
-        if (isRed(current.right)) {
-            current = rotateLeft(current);
-        }
-
-        if (isRed(current.left) && isRed(current.left.left)) {
-            current = rotateRight(current);
-        }
-
-        if (isRed(current.left) && isRed(current.right)) {
-            flipColors(current);
-        }
-
-        current.size = size(current.left) + size(current.right) +1;
-
-        return current;
-    }
-
 
     /**********
-     * Search/Retrieval Functions
+     * Search/Retrieval Methods
      **********/
+
     //Return the node with the matching searchKey
     public Value get(Key searchKey) {
         return get(root, searchKey);
@@ -148,7 +60,7 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
-    //Recursively traverse as far left as you can
+    //Recursively traverse as far left as you can, retrieve smallest key
     public Node min() {
         return min(root);
     }
@@ -161,7 +73,7 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
-    //Recursively travel as far right as you can
+    //Recursively travel as far right as you can, retrieve largest key
     public Node max() {
         return max(root);
     }
@@ -278,10 +190,16 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         }
     }
 
+    //Does the tree contain this searchKey?
+    public boolean contains(Key searchKey) {
+        return get(searchKey) != null;
+    }
+
 
     /**********
-     * Insertion Functions
+     * Insertion Methods
      **********/
+
     //Put works by recursively either creating a new node if needed, or assigning each node to itself
     public void put(Key key, Value newVal) {
         words++;
@@ -327,8 +245,9 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
 
 
     /**********
-     * Deletion functions
+     * Deletion Methods
      **********/
+
     //Delete the smallest element
     public void deleteMin() {
         if (isEmpty()) throw new NoSuchElementException("Red Black tree is empty");
@@ -391,11 +310,8 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         return balance(current);
     }
 
-    public boolean contains(Key searchKey) {
-        return get(searchKey) != null;
-    }
 
-
+    //Delete the passed in key, if it exists
     public void delete (Key toDelete) {
         // if both children of root are black, set root to red
         if (!isRed(root.left) && !isRed(root.right))
@@ -408,6 +324,7 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
     public Node delete (Node current, Key toDelete) {
         if (toDelete.compareTo(current.key) < 0)  {
 
+            //Move the red link down the left subtree, if needed
             if (!isRed(current.left) && !isRed(current.left.left)) {
                 current = moveRedLeft(current);
             }
@@ -415,18 +332,22 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
             current.left = delete(current.left, toDelete);
         }
         else {
+            //If the left link is red, rotate it to the right
             if (isRed(current.left)) {
                 current = rotateRight(current);
             }
 
+            //If the key matches and there's no right child, delete it
             if (toDelete.compareTo(current.key) == 0 && (current.right == null)) {
                 return null;
             }
 
+            //Move the red link down to the right, if needed
             if (!isRed(current.right) && !isRed(current.right.left)) {
                 current = moveRedRight(current);
             }
 
+            //If the key matches, replace it with it's smallest successor, and then delete it's smallest successor
             if (toDelete.compareTo(current.key) == 0) {
                 Node temp = min(current.right);
                 current.key = temp.key;
@@ -442,6 +363,10 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         return balance(current);
     }
 
+
+    /**********
+     * General Utility Methods
+     **********/
 
     public Iterable<Key> keys() {
         forIterating = new ArrayList();
@@ -490,7 +415,101 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
         return (root == null);
     }
 
-    //Test client for BST Symbol Table
+
+    /**********
+     * Red-Black Helper Functions
+     **********/
+
+    //Is this node Red?
+    private boolean isRed(Node x) {
+        if (x == null) {
+            return false;
+        }
+
+        return x.color == RED;
+    }
+
+    //Make right-leaning link lean left
+    private Node rotateLeft(Node toRotate) {
+        Node temp = toRotate.right;
+        toRotate.right = temp.left;
+        temp.left = toRotate;
+        temp.color = toRotate.color;
+        toRotate.color = RED;
+        temp.size = toRotate.size;
+        toRotate.size = 1 + size(toRotate.left) + size(toRotate.right);
+        return temp;
+    }
+
+    //Make left-leaning link lean right
+    private Node rotateRight(Node toRotate) {
+        Node temp = toRotate.left;
+        toRotate.left = temp.right;
+        temp.right = toRotate;
+        temp.color = toRotate.color;
+        toRotate.color = RED;
+        temp.size = toRotate.size;
+        toRotate.size = 1 + size(toRotate.left) + size(toRotate.right);
+        return temp;
+    }
+
+    //Change a node with two red links to a node with two black links
+    private void flipColors(Node toFlip) {
+        toFlip.color = !toFlip.color;
+        toFlip.left.color = !toFlip.left.color;
+        toFlip.right.color = !toFlip.right.color;
+    }
+
+    //Assume that current is red and both current.left and current.left.left are black,
+    //make current.left or one of it's children red
+    private Node moveRedLeft(Node current) {
+        flipColors(current);
+
+        if (isRed(current.right.left)) {
+            current.right = rotateRight(current.right);
+            current = rotateLeft(current);
+            flipColors(current);
+        }
+
+        return current;
+    }
+
+    //Assume that current is red and both current.right and current.right.left are black,
+    //make current.right or one of it's children red
+    private Node moveRedRight(Node current) {
+        flipColors(current);
+
+        if (isRed(current.left.left)) {
+            current = rotateRight(current);
+        }
+
+        return current;
+    }
+
+    //Ensure red-black balance
+    private Node balance(Node current) {
+        if (isRed(current.right)) {
+            current = rotateLeft(current);
+        }
+
+        if (isRed(current.left) && isRed(current.left.left)) {
+            current = rotateRight(current);
+        }
+
+        if (isRed(current.left) && isRed(current.right)) {
+            flipColors(current);
+        }
+
+        current.size = size(current.left) + size(current.right) +1;
+
+        return current;
+    }
+
+
+    /**********
+     * Test Client
+     **********/
+
     public static void main(String[] args) {
         RBTSymbolTable<Integer, String> testRBT = new RBTSymbolTable<Integer, String>();
 
