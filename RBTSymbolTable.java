@@ -272,7 +272,7 @@ public class RBTSymbolTable<Key extends Comparable<Key>, Value> {
             current = moveRedLeft(current);
         }
 
-        current.left = (deleteMin(current.left));
+        current.left = deleteMin(current.left);
 
         return balance(current);
     }

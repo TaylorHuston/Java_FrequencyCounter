@@ -16,6 +16,9 @@ public class FrequencyCounter {
         //Binary Search Tree implementation
         BSTSymbolTable<String, Integer> bstst = new BSTSymbolTable<String, Integer>();
 
+        //Binary Search Tree implementation
+        RBTSymbolTable<String, Integer> rbtst = new RBTSymbolTable<String, Integer>();
+
 
         //Build Symbol Tables
         //Read each string in. If it's long enough, try and add it to the Symbol Table.
@@ -40,6 +43,12 @@ public class FrequencyCounter {
                     bstst.put(word, 1);
                 } else {
                     bstst.put(word, bstst.get(word)+1);
+                }
+
+                if(!rbtst.contains(word)) {
+                    rbtst.put(word, 1);
+                } else {
+                    rbtst.put(word, rbtst.get(word)+1);
                 }
             }
         }
@@ -87,6 +96,21 @@ public class FrequencyCounter {
             }
         }
         StdOut.println("Most Frequent Word: " + max + " " + bstst.get(max));
+
+        StdOut.println();
+        StdOut.println("Red-Black Tree Implementation");
+        StdOut.println("Compares: " + rbtst.compares());
+        StdOut.println("Total Words: " + rbtst.words());
+        StdOut.println("Distinct Words: " + rbtst.size());
+
+        max = "";
+        rbtst.put(max,0);
+        for(String word : rbtst.keys()) {
+            if (rbtst.get(word) > rbtst.get(max)) {
+                max = word;
+            }
+        }
+        StdOut.println("Most Frequent Word: " + max + " " + rbtst.get(max));
     }
 }
 
