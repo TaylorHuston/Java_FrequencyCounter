@@ -17,8 +17,11 @@ public class FrequencyCounter {
         //Binary Search Tree implementation
         BSTSymbolTable<String, Integer> bstst = new BSTSymbolTable<String, Integer>();
 
-        //Binary Search Tree implementation
+        //Red-Black Tree implementation
         RBTSymbolTable<String, Integer> rbtst = new RBTSymbolTable<String, Integer>();
+
+        //Chained Hash Table implementation
+        SeparateChainingHashST<String, Integer> cHashST = new SeparateChainingHashST<String, Integer>();
 
 
         //Build Symbol Tables
@@ -50,6 +53,12 @@ public class FrequencyCounter {
                     rbtst.put(word, 1);
                 } else {
                     rbtst.put(word, rbtst.get(word)+1);
+                }
+
+                if(!cHashST.contains(word)) {
+                    cHashST.put(word, 1);
+                } else {
+                    cHashST.put(word, cHashST.get(word)+1);
                 }
             }
         }
@@ -112,6 +121,21 @@ public class FrequencyCounter {
             }
         }
         StdOut.println("Most Frequent Word: " + max + " " + rbtst.get(max));
+
+        StdOut.println();
+        StdOut.println("Chained Hash Table Implementation");
+        StdOut.println("Compares: " + cHashST.compares());
+        StdOut.println("Total Words: " + cHashST.words());
+        StdOut.println("Distinct Words: " + cHashST.size());
+
+        max = "";
+        cHashST.put(max,0);
+        for(String word : cHashST.keys()) {
+            if (cHashST.get(word) > cHashST.get(max)) {
+                max = word;
+            }
+        }
+        StdOut.println("Most Frequent Word: " + max + " " + cHashST.get(max));
     }
 }
 

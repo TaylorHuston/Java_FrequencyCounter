@@ -34,6 +34,10 @@ public class SeparateChainingHashST<Key, Value> {
         hashST[hash(newKey)].put(newKey, newVal);
     }
 
+    public boolean contains(Key newKey) {
+        return hashST[hash(newKey)].contains(newKey);
+    }
+
     public Value get(Key searchKey) {
         return (Value) hashST[hash(searchKey)].get(searchKey);
     }
@@ -49,6 +53,37 @@ public class SeparateChainingHashST<Key, Value> {
         }
         return forIterating;
     }
+
+    public int size() {
+        int size = 0;
+
+        for (int i=0; i < tableSize; i++) {
+            size += hashST[i].size();
+        }
+
+        return size;
+    }
+
+    public int compares() {
+        int compares = 0;
+
+        for (int i=0; i < tableSize; i++) {
+            compares += hashST[i].compares();
+        }
+
+        return compares;
+    }
+
+    public int words() {
+        int words = 0;
+
+        for (int i=0; i < tableSize; i++) {
+            words += hashST[i].words();
+        }
+
+        return words;
+    }
+
 
     public static void main(String[] args) {
         SeparateChainingHashST<Integer, String> testHash = new SeparateChainingHashST<Integer, String>(17);
