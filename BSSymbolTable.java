@@ -3,6 +3,7 @@ import java.util.NoSuchElementException;
 
 /**
  Symbol Table implementation using ordered parallel arrays and binary search
+ Based on Algorithms, 4th Ed by Robert Sedgewick | Kevin Wayne
  */
 public class BSSymbolTable<Key extends Comparable<Key>, Value> {
     private static int init_capacity = 2;

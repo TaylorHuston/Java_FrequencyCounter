@@ -1,5 +1,6 @@
 /**
-  Test client for various Symbol Table implementations
+ Test client for various Symbol Table implementations
+ Based on Algorithms, 4th Ed by Robert Sedgewick | Kevin Wayne
  */
 public class FrequencyCounter {
     public static void main(String args[]) {

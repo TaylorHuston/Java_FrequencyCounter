@@ -3,7 +3,8 @@ import java.util.NoSuchElementException;
 
 
 /**
-   Symbol Table implemented with an unordered Linked List
+ Symbol Table implemented with an unordered Linked List
+ Based on Algorithms, 4th Ed by Robert Sedgewick | Kevin Wayne
  */
 public class LLSymbolTable<Key, Value> {
     private Node head;
